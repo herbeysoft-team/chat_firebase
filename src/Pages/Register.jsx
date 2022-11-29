@@ -3,13 +3,13 @@ import Add from "../Assets/addAvatar.png";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, db, storage } from "../firebase";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { doc, setDoc } from "firebase/firestore";
-//import { useNavigate, Link } from "react-router-dom";
+import { doc, setDoc, collection, addDoc } from "firebase/firestore";
+import { useNavigate, Link } from "react-router-dom";
 
 const Register = () => {
   const [err, setErr] = useState(false);
   const [loading, setLoading] = useState(false);
-  //const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     setLoading(true);
@@ -36,16 +36,15 @@ const Register = () => {
               photoURL: downloadURL,
             });
             //create user on firestore
-            await setDoc(doc(db, "users", res.user.uid), {
-              uid: res.user.uid,
+            await addDoc(collection(db, "users"), {
               displayName,
               email,
               photoURL: downloadURL,
             });
 
             //create empty user chats on firestore
-            // await setDoc(doc(db, "userChats", res.user.uid), {});
-            // navigate("/");
+            await setDoc(doc(db, "userChats", res.user.uid), {});
+            navigate("/");
           } catch (err) {
             console.log(err);
             setErr(true);
@@ -78,7 +77,7 @@ const Register = () => {
           {err && <span>Something went wrong</span>}
         </form>
         <p>
-          {/* You do have an account? <Link to="/register">Login</Link> */}
+          You do have an account? <Link to="/register">Login</Link>
         </p>
       </div>
     </div>
